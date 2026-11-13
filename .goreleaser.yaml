@@ -1,0 +1,45 @@
+# GoReleaser の設定。タグ(v*)を push すると、GitHub Actions から実行される。
+# 手元での確認: docker compose run --rm goreleaser
+version: 2
+
+project_name: okf-lens
+
+builds:
+  - id: okf-lens
+    main: ./cmd/okf-lens
+    binary: okf-lens
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com/t-kitabayashi-churadata/okf-lens/internal/cli.Version={{ .Version }}
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      # Windows は amd64 のみ配布する(ARM の Windows は amd64 のエミュレーションで動く)。
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - id: okf-lens
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

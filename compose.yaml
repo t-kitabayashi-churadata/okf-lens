@@ -1,0 +1,26 @@
+services:
+  dev:
+    build: .
+    working_dir: /src
+    volumes:
+      - .:/src
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+    command: go test ./...
+
+  # リリースのドライラン。バイナリは dist/ に出力され、公開はしない。
+  # 使い方: docker compose run --rm goreleaser
+  # Git リポジトリで、コミットが1つ以上ある状態が必要。
+  goreleaser:
+    image: goreleaser/goreleaser:latest
+    profiles: [release]
+    working_dir: /src
+    entrypoint: [goreleaser]
+    command: [release, --snapshot, --clean]
+    volumes:
+      - .:/src
+      - go-mod-cache:/go/pkg/mod
+
+volumes:
+  go-mod-cache:
+  go-build-cache:
