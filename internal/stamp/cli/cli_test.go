@@ -170,3 +170,43 @@ func TestVersionAndHelp(t *testing.T) {
 		t.Errorf("apply -h: %d", code)
 	}
 }
+
+func TestScan_andPartition_andSchema(t *testing.T) {
+	root := tree(t, map[string]string{
+		"a/x.md": "---\ntype: API\n---\n# タイトル\n",
+		"a/y.md": "本文\n",
+	})
+	t.Chdir(root)
+
+	code, out, _ := run(t, "", "scan", "a", "--format", "json")
+	if code != 0 || !strings.Contains(out, `"state": "no-frontmatter"`) || !strings.Contains(out, `"h1": "タイトル"`) {
+		t.Errorf("scan: code=%d\n%s", code, out)
+	}
+	code, out, _ = run(t, "", "scan", "a")
+	if code != 0 || !strings.Contains(out, "STATE") || !strings.Contains(out, "a/x.md") {
+		t.Errorf("scan table: code=%d\n%s", code, out)
+	}
+	if code, _, _ := run(t, "", "scan"); code != 2 {
+		t.Errorf("PATH なしの scan = %d", code)
+	}
+	if code, _, _ := run(t, "", "scan", "../x"); code != 2 {
+		t.Errorf("境界の外の scan = %d", code)
+	}
+
+	code, out, _ = run(t, "", "partition", "a", "--format", "json")
+	if code != 0 || !strings.Contains(out, `"total": 2`) || !strings.Contains(out, `"recursive": true`) {
+		t.Errorf("partition: code=%d\n%s", code, out)
+	}
+	if code, _, _ := run(t, "", "partition", "a/x.md"); code != 2 {
+		t.Errorf("ファイル指定の partition = %d", code)
+	}
+	if code, _, _ := run(t, "", "partition", "a", "--max-files", "0"); code != 2 {
+		t.Errorf("--max-files 0 = %d", code)
+	}
+
+	code, out, _ = run(t, "", "schema")
+	var v map[string]any
+	if code != 0 || json.Unmarshal([]byte(out), &v) != nil {
+		t.Errorf("schema: code=%d\n%s", code, out)
+	}
+}

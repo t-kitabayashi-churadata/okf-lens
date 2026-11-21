@@ -199,15 +199,15 @@ func resolveTitle(fields map[string]any, body, p string) string {
 	if t := stringField(fields, "title"); t != "" {
 		return t
 	}
-	if h := firstH1(body); h != "" {
+	if h := FirstH1(body); h != "" {
 		return h
 	}
 	base := path.Base(p)
 	return strings.TrimSuffix(base, path.Ext(base))
 }
 
-// firstH1 はコードフェンスの外にある最初の "# 見出し" を返す。
-func firstH1(body string) string {
+// FirstH1 はコードフェンスの外にある最初の "# 見出し" を返す。okf-stamp の scan も使う。
+func FirstH1(body string) string {
 	inFence := false
 	for _, line := range strings.Split(body, "\n") {
 		trimmed := strings.TrimSpace(line)

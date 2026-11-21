@@ -143,3 +143,35 @@ func short(v any) string {
 	}
 	return s
 }
+
+func writeJSONValue(w io.Writer, v any) error {
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "  ")
+	return enc.Encode(v)
+}
+
+// writeRows は先頭行をヘッダーとして、列を揃えて書く。最後の列は埋めない。
+func writeRows(w io.Writer, rows [][]string) error {
+	cols := len(rows[0])
+	widths := make([]int, cols)
+	for _, row := range rows {
+		for i := 0; i < cols-1; i++ {
+			if n := displayWidth(row[i]); n > widths[i] {
+				widths[i] = n
+			}
+		}
+	}
+	var b strings.Builder
+	for _, row := range rows {
+		for i, c := range row {
+			b.WriteString(c)
+			if i < cols-1 {
+				b.WriteString(strings.Repeat(" ", widths[i]-displayWidth(c)+2))
+			}
+		}
+		b.WriteByte('\n')
+	}
+	_, err := io.WriteString(w, b.String())
+	return err
+}

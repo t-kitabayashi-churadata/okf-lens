@@ -33,6 +33,13 @@ func Run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	switch args[0] {
 	case "apply":
 		return runApply(args[1:], stdin, stdout, stderr)
+	case "scan":
+		return runScan(args[1:], stdout, stderr)
+	case "partition":
+		return runPartition(args[1:], stdout, stderr)
+	case "schema":
+		fmt.Fprint(stdout, stamp.Schema)
+		return exitOK
 	case "version", "-v", "--version":
 		fmt.Fprintf(stdout, "okf-stamp %s\n", Version)
 		return exitOK
@@ -51,6 +58,9 @@ func usage(w io.Writer) {
 
 使い方:
   okf-stamp apply [PATH...] [フラグ]   frontmatter を付与する(既定は dry-run)
+  okf-stamp scan [PATH...] [フラグ]    対象ファイルの状態を調べる(変更しない)
+  okf-stamp partition [PATH...] [フラグ]  対象を重ならないグループに分ける
+  okf-stamp schema                     マニフェストの JSON Schema を表示する
   okf-stamp version                    バージョンを表示する
   okf-stamp help                       このヘルプを表示する
 
