@@ -164,7 +164,7 @@ func parseTags(v any) (tags, warnings []string) {
 		if c == "" {
 			continue
 		}
-		if !validTag(c) {
+		if !ValidTag(c) {
 			warnings = append(warnings, fmt.Sprintf("不正なタグを読み飛ばした: %q", c))
 			continue
 		}
@@ -173,9 +173,9 @@ func parseTags(v any) (tags, warnings []string) {
 	return tags, warnings
 }
 
-// validTag は Obsidian のタグ規則に従う。
+// ValidTag は Obsidian のタグ規則に従う。
 // 使える文字は文字、数字、"_"、"-"、"/"。数字だけのタグと空の階層は不正。
-func validTag(tag string) bool {
+func ValidTag(tag string) bool {
 	for _, seg := range strings.Split(tag, "/") {
 		if seg == "" {
 			return false

@@ -62,11 +62,7 @@ func ScanDir(dir string, opts Options) (*Result, error) {
 //
 // 個々のファイルの読み込みや解析の失敗では止まらず、Result.Skipped に記録する。
 func Scan(fsys fs.FS, opts Options) (*Result, error) {
-	ignoreFile, err := fs.ReadFile(fsys, IgnoreFileName)
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("source: %s を読めない: %w", IgnoreFileName, err)
-	}
-	ex, err := newMatcher(ignoreFile, opts.Exclude)
+	ex, err := loadMatcher(fsys, opts.Exclude)
 	if err != nil {
 		return nil, err
 	}
@@ -124,15 +120,27 @@ func Scan(fsys fs.FS, opts Options) (*Result, error) {
 	return res, nil
 }
 
-// isConceptCandidate は concept になりうるファイル名かを返す。
-func isConceptCandidate(name string) bool {
-	if !strings.EqualFold(path.Ext(name), ".md") {
-		return false
+// loadMatcher は fsys のルートにある .okf-lensignore と exclude から、除外判定を作る。
+func loadMatcher(fsys fs.FS, exclude []string) (*matcher, error) {
+	ignoreFile, err := fs.ReadFile(fsys, IgnoreFileName)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return nil, fmt.Errorf("source: %s を読めない: %w", IgnoreFileName, err)
 	}
+	return newMatcher(ignoreFile, exclude)
+}
+
+// IsReserved は OKF の予約ファイル名(index.md、log.md)かを返す。
+// 大文字小文字は区別しない。concept ではないので、読み書きの対象にしない。
+func IsReserved(name string) bool {
 	for _, r := range reservedNames {
 		if strings.EqualFold(name, r) {
-			return false
+			return true
 		}
 	}
-	return true
+	return false
+}
+
+// isConceptCandidate は concept になりうるファイル名かを返す。
+func isConceptCandidate(name string) bool {
+	return strings.EqualFold(path.Ext(name), ".md") && !IsReserved(name)
 }
