@@ -58,8 +58,8 @@ type Scope struct {
 type FileResult struct {
 	Path        string   `json:"path"`
 	Action      string   `json:"action"` // add、update、unchanged、skip
-	Added       []string `json:"added"`
-	Overwritten []string `json:"overwritten"`
+	Added       []string `json:"-"`      // changes に含まれる。table の DETAIL に使う
+	Overwritten []string `json:"-"`      // 同上
 	Kept        []string `json:"kept"`
 	Errors      []*Error `json:"errors"`
 	Warnings    []*Error `json:"warnings"`

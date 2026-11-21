@@ -95,10 +95,9 @@ func TestApply_json(t *testing.T) {
 			Recursive bool     `json:"recursive"`
 		} `json:"scope"`
 		Files []struct {
-			Path    string   `json:"path"`
-			Action  string   `json:"action"`
-			Added   []string `json:"added"`
-			Errors  []any    `json:"errors"`
+			Path    string `json:"path"`
+			Action  string `json:"action"`
+			Errors  []any  `json:"errors"`
 			Changes []struct {
 				Key    string `json:"key"`
 				Before any    `json:"before"`
@@ -113,7 +112,7 @@ func TestApply_json(t *testing.T) {
 		t.Errorf("rep = %+v", rep)
 	}
 	f := rep.Files[0]
-	if f.Action != "update" || f.Added[0] != "tags" || f.Errors == nil || len(f.Changes) != 1 || f.Changes[0].Key != "tags" {
+	if f.Action != "update" || f.Errors == nil || len(f.Changes) != 1 || f.Changes[0].Key != "tags" {
 		t.Errorf("file = %+v", f)
 	}
 }
@@ -179,7 +178,7 @@ func TestScan_andPartition_andSchema(t *testing.T) {
 	t.Chdir(root)
 
 	code, out, _ := run(t, "", "scan", "a", "--format", "json")
-	if code != 0 || !strings.Contains(out, `"state": "no-frontmatter"`) || !strings.Contains(out, `"h1": "タイトル"`) {
+	if code != 0 || !strings.Contains(out, `"state":"no-frontmatter"`) || !strings.Contains(out, `"h1":"タイトル"`) {
 		t.Errorf("scan: code=%d\n%s", code, out)
 	}
 	code, out, _ = run(t, "", "scan", "a")
@@ -194,11 +193,11 @@ func TestScan_andPartition_andSchema(t *testing.T) {
 	}
 
 	code, out, _ = run(t, "", "partition", "a", "--format", "json")
-	if code != 0 || !strings.Contains(out, `"total": 2`) || !strings.Contains(out, `"recursive": true`) {
+	if code != 0 || !strings.Contains(out, `"total":2`) || !strings.Contains(out, `"recursive":true`) {
 		t.Errorf("partition: code=%d\n%s", code, out)
 	}
 	code, out, _ = run(t, "", "partition", "a/x.md", "--format", "json")
-	if code != 0 || !strings.Contains(out, `"path": "a/x.md"`) || !strings.Contains(out, `"files": 1`) {
+	if code != 0 || !strings.Contains(out, `"path":"a/x.md"`) || !strings.Contains(out, `"files":1`) {
 		t.Errorf("ファイル指定の partition: code=%d\n%s", code, out)
 	}
 	if code, _, _ := run(t, "", "partition", "a", "--max-files", "0"); code != 2 {

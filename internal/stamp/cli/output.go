@@ -100,7 +100,6 @@ func writeTable(w io.Writer, rep *stamp.Report) error {
 func writeJSON(w io.Writer, rep *stamp.Report) error {
 	enc := json.NewEncoder(w)
 	enc.SetEscapeHTML(false)
-	enc.SetIndent("", "  ")
 	return enc.Encode(rep)
 }
 
@@ -147,7 +146,6 @@ func short(v any) string {
 func writeJSONValue(w io.Writer, v any) error {
 	enc := json.NewEncoder(w)
 	enc.SetEscapeHTML(false)
-	enc.SetIndent("", "  ")
 	return enc.Encode(v)
 }
 

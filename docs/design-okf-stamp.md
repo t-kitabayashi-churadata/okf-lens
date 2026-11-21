@@ -399,10 +399,9 @@ dry-run のときは、標準エラー出力に `dry-run: ファイルは変更�
     {
       "path": "api/auth.md",
       "action": "add",
-      "added": ["type", "title", "tags"],
-      "overwritten": [],
       "kept": [],
       "errors": [],
+      "warnings": [],
       "changes": [
         { "key": "type", "after": "API" },
         { "key": "status", "before": "draft", "after": "stable" }
@@ -417,6 +416,7 @@ dry-run のときは、標準エラー出力に `dry-run: ファイルは変更�
 }
 ```
 
+- JSON はインデントなしの 1 行で出す(R2。100 ファイルで 77KB を 33KB にした)。`added` と `overwritten` は出さない。`changes` に、新しく書いたキー(`before` なし)と、上書きしたキー(`before` あり)の両方が入る。
 - `changes` は、書いたキー(dry-run では書くキー)ごとに、変更前(`before`)と変更後(`after`)の値を出す。新しく書いたキーは `before` を省く。値が同じで書かなかったキーは出さない。常に出す(フラグはない)。table 形式では、上書きしたキーを DETAIL に `~type(Memo→API)` と出す(30 文字を超える値は省略する)。
 - `warnings` は `errors` と同じ形(`code`、`message`)で、書き込みは止めない注意を入れる。table 形式では、DETAIL に `warn: legacy_key` と出す。
 - `errors[].code` は機械可読にする。エージェントが、次の質問を決める手がかりにする。
@@ -496,3 +496,4 @@ okf-lens の GoReleaser 設定(D20)に、`okf-stamp` のビルドを1つ追加�
 | P10【承認済み 2026-11-21】 | 存在しない PATH は、何も処理せず、終了コード 2 で止める | S13 で「境界の外は止める」と決めたため、同じコマンドの誤りとして揃えた。存在しない PATH の扱いは、ユーザーが明示していなかったため確認し、承認を得た |
 | P11【承認済み 2026-11-21】 | `partition` の PATH にファイルを指定したら、そのファイル 1 つを `recursive: false`、`files: 1` のグループにする。フォルダの PATH の配下にあるファイルは、重複させない。対象外のファイル(`index.md`、`.md` 以外)は、グループにしない | R2 から導いた。`partition` の目的は、出力をコンテキストに収まる量にすること。1 ファイルの指定は出力が小さく、処理できるため、止める理由がない |
 | P12【承認済み 2026-11-21】 | `scan` で PATH のファイルが対象外(`index.md`、`.md` 以外)のとき、結果にも標準エラー出力にも出さない。対象外のファイルの扱いは、README とヘルプに書く。`state: broken` の理由は出さない(7 章は `path`、`state`、`keys`、`h1` のみ) | ユーザーの決定。出力を増やさない方針(R2)とも合う |
+| P13【承認済み 2026-11-21】 | JSON をインデントなしにし、`added` と `overwritten` を廃止して `changes` に統合した。空の配列(`kept`、`errors`、`warnings`、`changes`)は常に出す | R2。100 ファイルの `apply` の JSON が 77KB で、マニフェスト(21KB)の 3.6 倍あった。R1 にも合う(同じ内容を持つフィールドを 1 つにする) | ユーザーが質問「JSON の量」に、この案(Recommended)を選択 |
