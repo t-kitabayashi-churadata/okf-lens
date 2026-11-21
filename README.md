@@ -2,7 +2,7 @@
 
 OKF(Open Knowledge Format)のバンドルを検索する CLI ツール。macOS、Windows、Linux(GitHub Codespaces の Ubuntu を含む)で動く。
 
-> ステータス: `search`(backlinks を含む)と `types` を実装済み。配布の設定(GoReleaser、GitHub Actions)まで完了。詳細は [docs/design.md](docs/design.md)。
+> ステータス: `search`(backlinks を含む)と `types` を実装済み。`okf-stamp`(frontmatter の付与)も同梱。配布の設定(GoReleaser、GitHub Actions)まで完了。詳細は [docs/design.md](docs/design.md)。
 
 ## できること
 
@@ -94,6 +94,32 @@ aliases: [ログインAPI]
 ```
 
 必須キーは `type` のみ。それ以外のキーは自由に使える。
+
+## okf-stamp: frontmatter を付与する
+
+同じリポジトリの別のバイナリ。`.md` ファイルに OKF の frontmatter を書く。既存の本文と書式は変えない。既定は dry-run で、`--write` を付けたときだけ書く。設計は [docs/design-okf-stamp.md](docs/design-okf-stamp.md)。
+
+```sh
+# 状態を調べる(変更しない)
+okf-stamp scan docs
+
+# docs 配下に type とタグを付ける(dry-run)
+okf-stamp apply docs --type API --tag 設計
+
+# 反映する
+okf-stamp apply docs --type API --tag 設計 --write
+
+# ファイルごとの値は JSON のマニフェストで渡す(形式は okf-stamp schema)
+okf-stamp apply --manifest manifest.json --write
+
+# 大量のファイルを、重ならないグループに分ける
+okf-stamp partition docs --max-files 100
+```
+
+- 対象は PATH(ファイルまたはフォルダ)で指定する。実行時のカレントディレクトリの外には出られない。
+- 既存の値の扱いは `--mode`(`fill`、`overwrite`、`merge`)で決める。
+- 結果は表か `--format json`。JSON の `changes` に、キーごとの変更前と変更後が入る。
+- 終了コードは 0(成功)、1(実行エラー)、2(引数エラー)、3(一部をスキップ)。
 
 ## 設計方針
 
