@@ -436,7 +436,7 @@ okf-lens の GoReleaser 設定(D20)に、`okf-stamp` のビルドを1つ追加�
 | 5 | `cmd/okf-stamp apply`(dry-run、table と json、終了コード)(実装済み) |
 | 6 | `--write`(原子的な書き込み、競合検出、読み直し)(実装済み) |
 | 7 | `schema`、`scan`、`partition`、`--no-recurse`、`outside_scope`(実装済み。`--no-recurse` と `outside_scope` は手順 5〜6 で `apply` に入れた) |
-| 8 | GoReleaser と CI の更新 |
+| 8 | GoReleaser と CI の更新(実装済み。GoReleaser に `okf-stamp` のビルドとアーカイブを追加し、スナップショットビルドで両方の成果物を確認した。CI は `go test ./...` が両方を含むため変更なし) |
 | 9 | エージェント側(Skill)の作成。別途設計する |
 
 ## 13. 未決事項
