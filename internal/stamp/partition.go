@@ -25,6 +25,7 @@ type PartitionResult struct {
 
 // Partition は files を、フォルダ単位で互いに重ならないグループに分ける。
 // scopes は PATH のディレクトリ。files は ResolveTargets の結果。
+// scopes の配下にないファイル(PATH で直接指定されたファイル)は、1 ファイルのグループにする。
 //
 // 配下のファイル数が max 以下のフォルダは、再帰的な 1 グループにする。
 // 超えるフォルダは、サブフォルダごとに分け、直下のファイルは recursive: false の
@@ -90,6 +91,11 @@ func Partition(files []string, scopes []string, max int) PartitionResult {
 	for _, d := range roots {
 		walk(d)
 	}
+	for _, f := range files {
+		if !underAny(roots, f) {
+			res.Groups = append(res.Groups, Group{Path: f, Recursive: false, Files: 1})
+		}
+	}
 	sort.SliceStable(res.Groups, func(i, j int) bool { return res.Groups[i].Path < res.Groups[j].Path })
 	res.Total = len(files)
 	return res
@@ -112,4 +118,14 @@ func uniqueDirs(ds []string) []string {
 		out = append(out, d)
 	}
 	return out
+}
+
+// underAny は f が、dirs のどれかの配下にあるかを返す。
+func underAny(dirs []string, f string) bool {
+	for _, d := range dirs {
+		if d == "." || strings.HasPrefix(f, d+"/") {
+			return true
+		}
+	}
+	return false
 }

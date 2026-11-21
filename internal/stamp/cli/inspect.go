@@ -44,7 +44,8 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 	var exclude multiFlag
 	fs.Var(&exclude, "exclude", "除外するファイルやディレクトリ(gitignore 風)。繰り返し指定できる")
 	fs.Usage = func() {
-		fmt.Fprint(stderr, "使い方: okf-stamp scan [PATH...] [フラグ]\n\nフラグ:\n")
+		fmt.Fprint(stderr, "使い方: okf-stamp scan [PATH...] [フラグ]\n\n"+
+			"index.md、log.md(OKF の予約ファイル)と .md 以外のファイルは対象外で、結果に出さない。\n\nフラグ:\n")
 		fs.PrintDefaults()
 	}
 	paths, err := parseInterspersed(fs, args)
@@ -63,9 +64,6 @@ func runScan(args []string, stdout, stderr io.Writer) int {
 		return code
 	}
 	entries := stamp.Scan(root, t.Files)
-	for _, s := range t.Skipped {
-		fmt.Fprintf(stderr, "対象外: %s: %s\n", s.Path, s.Error.Message)
-	}
 	if *format == "json" {
 		err = writeJSONValue(stdout, entries)
 	} else {
@@ -97,7 +95,8 @@ func runPartition(args []string, stdout, stderr io.Writer) int {
 	var exclude multiFlag
 	fs.Var(&exclude, "exclude", "除外するファイルやディレクトリ(gitignore 風)。繰り返し指定できる")
 	fs.Usage = func() {
-		fmt.Fprint(stderr, "使い方: okf-stamp partition [PATH...] [フラグ]\n\nフラグ:\n")
+		fmt.Fprint(stderr, "使い方: okf-stamp partition [PATH...] [フラグ]\n\n"+
+			"PATH のファイルは、1 ファイルのグループになる。index.md、log.md と .md 以外は対象外。\n\nフラグ:\n")
 		fs.PrintDefaults()
 	}
 	paths, err := parseInterspersed(fs, args)
@@ -126,11 +125,9 @@ func runPartition(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintln(stderr, err)
 			return exitUsage
 		}
-		if !isDir {
-			fmt.Fprintf(stderr, "PATH %q: partition はフォルダだけを指定できる\n", p)
-			return exitUsage
+		if isDir {
+			dirs = append(dirs, rel)
 		}
-		dirs = append(dirs, rel)
 	}
 	res := stamp.Partition(t.Files, dirs, *maxFiles)
 	if *format == "json" {

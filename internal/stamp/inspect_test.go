@@ -117,3 +117,16 @@ func TestSchemaIsValidJSON(t *testing.T) {
 		t.Error("未知のトップレベルキーを許している(設計書 6 章はエラー)")
 	}
 }
+
+func TestPartition_filePaths(t *testing.T) {
+	fl := []string{"a/x.md", "a/y.md", "b.md"}
+	// a はフォルダの PATH、b.md と a/x.md はファイルの PATH。a/x.md は a の配下なので重複させない。
+	got := Partition(fl, []string{"a"}, 100)
+	if len(got.Groups) != 2 || got.Groups[0].Path != "a" || got.Groups[0].Files != 2 ||
+		got.Groups[1].Path != "b.md" || got.Groups[1].Recursive || got.Groups[1].Files != 1 {
+		t.Errorf("groups = %+v", got.Groups)
+	}
+	if got.Total != 3 {
+		t.Errorf("total = %d", got.Total)
+	}
+}

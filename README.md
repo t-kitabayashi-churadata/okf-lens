@@ -117,6 +117,7 @@ okf-stamp partition docs --max-files 100
 ```
 
 - 対象は PATH(ファイルまたはフォルダ)で指定する。実行時のカレントディレクトリの外には出られない。
+- `index.md` と `log.md`(OKF の予約ファイル)、`.md` 以外のファイルは対象外。`scan` と `partition` の結果には出ない。`apply` では、PATH で直接指定すると `skip` として報告する。
 - 既存の値の扱いは `--mode`(`fill`、`overwrite`、`merge`)で決める。
 - 結果は表か `--format json`。JSON の `changes` に、キーごとの変更前と変更後が入る。
 - 終了コードは 0(成功)、1(実行エラー)、2(引数エラー)、3(一部をスキップ)。
