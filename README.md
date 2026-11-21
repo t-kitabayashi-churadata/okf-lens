@@ -122,6 +122,10 @@ okf-stamp partition docs --max-files 100
 - 結果は表か `--format json`。JSON の `changes` に、キーごとの変更前と変更後が入る。
 - 終了コードは 0(成功)、1(実行エラー)、2(引数エラー)、3(一部をスキップ)。
 
+### Skill(エージェント側の手順)
+
+`.claude/skills/okf-stamp/SKILL.md` に、`okf-stamp` を使う作業の手順がある。全体の方針を決めるモードと、担当フォルダを処理するモードの 2 つ。別のリポジトリで使うときは、`okf-stamp` と `okf-lens` を PATH に置き、`.claude/skills/okf-stamp/` を、そのリポジトリの `.claude/skills/` か `~/.claude/skills/` にコピーする。
+
 ## 設計方針
 
 - Go のシングルバイナリ。ランタイム不要
