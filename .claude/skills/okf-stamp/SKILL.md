@@ -37,7 +37,7 @@ description: Markdown ファイルに OKF の frontmatter(type、title、tags �
 2. 現状を調べる。
    - `okf-stamp scan <PATH> --format json` の結果から、`state` ごとの件数を数える(`ok`、`no-type`、`no-frontmatter`、`broken`)。
    - `okf-stamp partition <PATH> --format json` で、フォルダごとのファイル数を見る。
-   - 一覧は表示しない。件数と、`broken` のファイルのパス(多いときは先頭 10 件)だけを報告する。
+   - 一覧は表示しない。件数と、`broken` のファイルのパス(多いときは先頭 10 件)だけを報告する。利用者が詳細を求めたら出す。
 3. 既存の `type` を調べる。`okf-lens types --dir <PATH>`。件数付きで出る。`API` と `api` のような表記の揺れがあれば、利用者に示す。
 4. 方針の項目を、1 つずつ聞く。
 
