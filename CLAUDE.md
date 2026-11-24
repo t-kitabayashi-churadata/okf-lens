@@ -44,5 +44,5 @@ main は ruleset(`protect-main`)で保護している。削除、強制 push、P
 | 強制 push、ruleset や設定の変更 | ユーザーに確認する |
 
 - 作業は、main から feature ブランチを切って始める。main へ直接コミットしない。
-- ユーザーの決定は「feature ブランチを切るところから Claude に任せる」まで。上の範囲(PR の作成まで)は、Claude の解釈。範囲が違えば、ユーザーが差し戻す。
+- ユーザーは「feature ブランチを切るところから Claude に任せる」と決めた。上の範囲(PR の作成まで)は、Claude の解釈を、2026-11-24 にユーザーが「合っている」と承認した。
 - スキル(`.claude/skills/okf-stamp/SKILL.md`)の「git の操作は一切しない」は、スキルの利用者向けの規則。この表とは別。
